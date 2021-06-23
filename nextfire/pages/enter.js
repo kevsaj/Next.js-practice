@@ -1,6 +1,8 @@
-import { auth, googleAuthProvider } from '../lib/firebase';
-import { useContext } from 'react';
+import { auth, firestore, googleAuthProvider } from '../lib/firebase';
 import { UserContext } from '../lib/context';
+
+import { useEffect, useState, useCallback, useContext } from 'react';
+import debounce from 'lodash.debounce';
 
 export default function Enter(props) {
   const user = null;
@@ -12,11 +14,8 @@ export default function Enter(props) {
   // 3. user signed in, has username <SignOutButton />
   return (
     <main>
-      {user ? 
-        !username ? <UsernameForm /> : <SignOutButton /> 
-        : 
-        <SignInButton />
-      }
+      <Metatags title="Enter" description="Sign up for this amazing app!" />
+      {user ? !username ? <UsernameForm /> : <SignOutButton /> : <SignInButton />}
     </main>
   );
 }
@@ -41,4 +40,16 @@ function SignOutButton() {
 
 function UsernameForm() {
   return null;
+}
+
+function UsernameMessage({ username, isValid, loading }) {
+  if (loading) {
+    return <p>Checking...</p>;
+  } else if (isValid) {
+    return <p className="text-success">{username} is available!</p>;
+  } else if (username && !isValid) {
+    return <p className="text-danger">That username is taken!</p>;
+  } else {
+    return <p></p>;
+  }
 }
